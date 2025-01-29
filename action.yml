@@ -1,0 +1,22 @@
+name: Create Feature Candidate
+
+description: Create Feature Candidate
+
+runs:
+  using: "composite"
+  steps:
+  - name: Git checkout
+    uses: actions/checkout@v4
+    with:
+      ref: "main"
+
+  - name: Git
+    run: |
+      chown -R $(id -u):$(id -g) $PWD
+      JIRA_ID=$(echo "${GITHUB_REF_NAME}" | grep -oE '[0-9]+$')
+      BRANCH_NAME="fc/${JIRA_ID}"
+      git config user.name "GitHub Actions Bot"
+      git config user.email "devops@logcomex.com"
+      git checkout -b $BRANCH_NAME || echo "Branch already exists"
+      git push --set-upstream origin $BRANCH_NAME || echo "Push failed"
+    shell: bash
